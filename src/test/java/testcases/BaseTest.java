@@ -8,6 +8,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 
+
 public class BaseTest {
 
     protected Response response;
@@ -42,22 +43,25 @@ public class BaseTest {
     }
 
     public void validateStatusCode(int statusCode) {
-        response.then().statusCode(statusCode);
+        SerenityRest.restAssuredThat(response -> response.statusCode(statusCode));
+        response.prettyPrint();
+    }
+
+//    public JsonPath rawToJson(String response) {
+//        JsonPath js1 = new JsonPath(response);
+//        return js1;
+//    }
+
+    public int getStatusCode() {
+        return response.getStatusCode();
     }
 
     //if is it map:
     public void verifyResponseBody(String key, String value) {
-        response.then().body(key, Matchers.equalTo(value));
+        SerenityRest.restAssuredThat(response -> response.body(key, Matchers.equalTo(value)));
     }
 
     public void verifyResponseBodyInt(String key,int value) {
         response.then().body(key, Matchers.equalTo(value));
     }
-
-
-
-
-
-
-
 }

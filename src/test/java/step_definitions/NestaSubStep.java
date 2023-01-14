@@ -1,27 +1,26 @@
 package step_definitions;
 
 import company.*;
-import io.cucumber.junit.CucumberSerenityRunner;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import net.serenitybdd.junit.runners.SerenityRunner;
-import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
-import net.thucydides.core.annotations.Title;
 
-import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import testcases.BaseTest;
 
 
 @RunWith(SerenityRunner.class)
 public class NestaSubStep  extends BaseTest {
-//    private static final String basePath = "https://jsonplaceholder.typicode.com";
     protected Response response;
+    protected Book book;;
 
+    @Step("List all posts for a user")
+    public void listPosts() {
+        sendGetRequest("/users/1/posts");
+        Assert.assertEquals(200, getStatusCode());
+    }
 
     @Step("Create new user")
     public void createNewUser() {
@@ -42,37 +41,42 @@ public class NestaSubStep  extends BaseTest {
                 .setAddress(address).setCompany(company)
                 .setWebsite("some@website.cpm").build();
         sendPostRequest(newUser, "/users");
-        validateStatusCode(201);
+        Assert.assertEquals(201, getStatusCode());
     }
 
     @Step("Delete post")
     public void deletePost() {
-        sendDeleteRequest("/posts/101");
+        sendDeleteRequest("/posts/100");
     }
 
-    @Step("Create comments with post request")
-    public void createComment() {
-        Book book = new Book.BookBuilder().setTitle("Title1").setBody("Description").setUserId("1").build();
+    @Step("Create post for a user")
+    public void createPost(String name1) {
+        book = new Book.BookBuilder().setTitle(name1).setBody("Description").setUserId("1").build();
         RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
         sendPostRequest(book, "/users/1/posts");
     }
 
+    @Step("validate if request was successful")
+    public void validateResponseTitle(String name) {
+        Assert.assertEquals(book.getTitle(), name);
+    }
+
+
     @Step("Update comments with post request")
-    public void updateComment() {
-        Book book = new Book.BookBuilder().setTitle("Title12").setBody("Description89").setUserId("1").build();
+    public void updateComment(String name2) {
+        book = new Book.BookBuilder().setTitle(name2).setBody("Description89").setUserId("1").build();
         RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
-        sendPutRequest(book, "/posts/5");
+        sendPutRequest(book, "/posts/100");
     }
 
     @Step("Validate status Code")
     public void validateStatusCodeStep(int code) {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        //RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
         validateStatusCode(code);
     }
+
+    @Step("Validate response body")
+    public void validateResponseBody(String value) {
+        verifyResponseBody(book.getTitle(), value);
+    }
 }
-
-
-
-
-
-
