@@ -17,7 +17,6 @@ public class NestaStep {
 
     @Steps
     SubSteps subSteps;
-    protected Response response;
     protected NewUser newUser;
     protected Book book;
     protected Album album;
@@ -25,6 +24,8 @@ public class NestaStep {
     protected int idUser;
     protected int idAlbum;
     protected int idPhoto;
+    protected JsonPath js;
+    protected String titlePhoto;
 
     @Step("Create new user")
     public void createNewUser() {
@@ -39,7 +40,6 @@ public class NestaStep {
         company.setName("Company Name Nice");
 
         RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
-
         newUser = new NewUser.NewUserBuilder().setName("Mini Max")
                 .setEmail("mini_m@gmail.com").setUserName("miniMa").setPhone("123859-85")
                 .setAddress(address).setCompany(company)
@@ -48,10 +48,9 @@ public class NestaStep {
 
         Assert.assertEquals(201, subSteps.getStatusCode());
         subSteps.verifyResponseBodyInt("id", 11);
-        JsonPath js = subSteps.rawToJson();
+        js = subSteps.rawToJson();
         idUser = js.get("id");
     }
-
 
     @Step("Create post for a user")
     public void createPost() {
@@ -62,7 +61,6 @@ public class NestaStep {
 
     @Step("Get all posts fo a user")
     public void getAllPosts() {
-        System.out.println("idUser = ***" + idUser);
         subSteps.sendGetRequest("posts/" + (idUser-1));
         subSteps.validateStatusCode(200);
     }
@@ -71,8 +69,9 @@ public class NestaStep {
     public void createAlbum() {
         album = new Album.AlbumBuilder().setTitle("album1").build();
         subSteps.sendPostRequest(album, "/users/" + (idUser-1) + "/albums");
-        idAlbum = album.getId();
-        subSteps.verifyResponseBodyInt("id", album.getId());
+        js = subSteps.rawToJson();
+        idAlbum = js.get("id");
+        subSteps.verifyResponseBodyInt("id", idAlbum);
         subSteps.validateStatusCode(201);
     }
 
@@ -84,12 +83,15 @@ public class NestaStep {
     }
 
     @Step("Post a photo")
-    public void postAPhoto() {
-        photo = new Photo.PhotoBuilder().setTitle("dog photo").setUrl("https://via.placeholder.com/600/92c952")
+    public void postAPhoto(String title) {
+        photo = new Photo.PhotoBuilder().setTitle(title).setUrl("https://via.placeholder.com/600/92c952")
                 .setThumbnailUrl("https://via.placeholder.com/150/92c952").build();
         subSteps.sendPostRequest(photo, "/albums/" + (idAlbum-1) + "/photos");
-        idPhoto = photo.getId();
-        subSteps.verifyResponseBodyInt("id", album.getId());
+        js = subSteps.rawToJson();
+        idPhoto = js.get("id");
+        titlePhoto = js.get("title");
+        subSteps.verifyResponseBodyInt("id", idPhoto);
+        subSteps.verifyResponseBody("title", titlePhoto);
         subSteps.validateStatusCode(201);
     }
 
@@ -98,6 +100,14 @@ public class NestaStep {
         subSteps.sendGetRequest("/photos/" + (idPhoto-1));
         subSteps.verifyResponseBodyInt("id", idPhoto-1);
         subSteps.validateStatusCode(200);
+    }
+
+    @Step("New album with photos is created")
+    public void verifyIfAlbumWithPhotosIsCreated() {
+        subSteps.verifyResponseBodyInt("id", idPhoto-1);
+        subSteps.validateStatusCode(200);
+        js = subSteps.rawToJson();
+        titlePhoto = js.get("title");
     }
 
     @Step("Validate if request was successful")
@@ -109,20 +119,19 @@ public class NestaStep {
     @Step("Update post")
     public void updatePost() {
         book = new Book.BookBuilder().setTitle("post 2").setBody("Description89").setUserId("1").build();
-//        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
         subSteps.sendPutRequest(book, "/posts/" + (idUser-1));
         subSteps.verifyResponseBody("title", book.getTitle());
         subSteps.validateStatusCode(200);
     }
 
-    @Step("Delete post")
-    public void deletePost() {
-        subSteps.sendDeleteRequest("/posts/100");
+    @Step("Delete photo")
+    public void deletePhoto() {
+        subSteps.sendDeleteRequest("/photos/" + (idPhoto-1));
+        subSteps.validateStatusCode(200);
     }
 
     @Step("Validate status Code")
     public void validateStatusCodeStep(int code) {
-        //RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
         subSteps.validateStatusCode(code);
     }
 

@@ -25,28 +25,26 @@ public class JsonPlaceholder {
         nestaStep.createAlbum();
         nestaStep.getAlbum();
     }
-    @And("Post a photo")
-    public void post_a_photo() {
-        nestaStep.postAPhoto();
-        nestaStep.getPhoto();
+    @And("^Post a photo with title (.*)$")
+    public void post_a_photo(String title) {
+        nestaStep.postAPhoto(title);
     }
     @Then("New album with photos is created")
     public void new_album_with_photos_is_created() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        nestaStep.getPhoto();
     }
-    @When("User update a post")
-    public void user_update_a_post() {
-
+    @When("User update a post and delete a photo")
+    public void user_update_a_post_and_delete_a_photo() {
+        nestaStep.updatePost();
+        nestaStep.deletePhoto();
     }
     @Then("Post is successfully changed")
     public void post_is_successfully_changed() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        nestaStep.validateStatusCodeStep(200);
     }
 
-//    @When("^User delete post with delete request$")
-//    public void userPostWithRequest() {
-//        nestaStep.deletePost();
-//    }
+    @When("^Photo is successfully deleted$")
+    public void photo_is_deleted() {
+        nestaStep.validateStatusCodeStep(200);
+    }
 }

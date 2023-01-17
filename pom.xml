@@ -95,7 +95,6 @@
       <version>3.0.0-M7</version>
     </dependency>
 
-
     <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -121,14 +120,10 @@
         <version>3.0.0-M7</version>
         <configuration>
           <includes>
-
             <!-- <include>**/testcases/Parameterization.java</include> -->
             <include>**/runner/**/*.java</include>
 <!--            <include>**/testcases/CreateUserTest.java</include>-->
-
-
           </includes>
-
           <parallel>classes</parallel>
           <threadCount>2</threadCount>
           <forkCount>2C</forkCount>

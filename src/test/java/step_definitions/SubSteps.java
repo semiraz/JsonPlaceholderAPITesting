@@ -10,9 +10,6 @@ import net.thucydides.core.annotations.Step;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 
-import java.io.InputStream;
-
-
 public class SubSteps {
 
     protected Response response;
@@ -55,10 +52,9 @@ public class SubSteps {
         response.prettyPrint();
     }
 
-    //??
     public JsonPath rawToJson() {
-        JsonPath js1 = new JsonPath((InputStream) response);
-        return js1;
+        JsonPath js = new JsonPath(response.asString());
+        return js;
     }
 
     @Step("Get Status Code")
