@@ -8,16 +8,10 @@ import net.serenitybdd.rest.SerenityRest;
 
 import net.thucydides.core.annotations.Step;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
 
 public class SubSteps {
 
     protected Response response;
-
-    @BeforeClass
-    public static void init() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
-    }
 
     @Step("Send Get Request")
     public void sendGetRequest(String path) {

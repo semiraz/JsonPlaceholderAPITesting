@@ -3,7 +3,6 @@ package step_definitions;
 import company.*;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Step;
 
@@ -51,19 +50,13 @@ public class NestaStep {
         js = subSteps.rawToJson();
         idUser = js.get("id");
     }
-
-    @Step("Create post for a user")
-    public void createPost() {
-        book = new Book.BookBuilder().setTitle("post 1").setBody("Description").build();
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
-        subSteps.sendPostRequest(book, "/users/" + (idUser-1) + "/posts");
-    }
-
-    @Step("Get all posts fo a user")
-    public void getAllPosts() {
-        subSteps.sendGetRequest("posts/" + (idUser-1));
-        subSteps.validateStatusCode(200);
-    }
+//
+//    @Step("Create post for a user")
+//    public void createPost() {
+//        book = new Book.BookBuilder().setTitle("post 1").setBody("Description").build();
+//        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+//        subSteps.sendPostRequest(book, "/users/" + (idUser-1) + "/posts");
+//    }
 
     @Step("Create an album for a user")
     public void createAlbum() {
@@ -83,8 +76,8 @@ public class NestaStep {
     }
 
     @Step("Post a photo")
-    public void postAPhoto(String title) {
-        photo = new Photo.PhotoBuilder().setTitle(title).setUrl("https://via.placeholder.com/600/92c952")
+    public void postAPhoto(String url, String title) {
+        photo = new Photo.PhotoBuilder().setTitle(title).setUrl(url)
                 .setThumbnailUrl("https://via.placeholder.com/150/92c952").build();
         subSteps.sendPostRequest(photo, "/albums/" + (idAlbum-1) + "/photos");
         js = subSteps.rawToJson();
@@ -93,6 +86,17 @@ public class NestaStep {
         subSteps.verifyResponseBodyInt("id", idPhoto);
         subSteps.verifyResponseBody("title", titlePhoto);
         subSteps.validateStatusCode(201);
+    }
+
+    @Step("Update photo")
+    public void updatePhoto(String title, String url) {
+        photo = new Photo.PhotoBuilder().setTitle(title).setUrl(url)
+                .setThumbnailUrl("https://via.placeholder.com/150/92c952").build();
+        subSteps.sendPutRequest(photo, "/photos/" + (idPhoto - 1));
+        js = subSteps.rawToJson();
+        titlePhoto = js.get("title");
+        subSteps.verifyResponseBody("title", titlePhoto);
+        subSteps.validateStatusCode(200);
     }
 
     @Step("Get a photo for a user")
@@ -108,20 +112,6 @@ public class NestaStep {
         subSteps.validateStatusCode(200);
         js = subSteps.rawToJson();
         titlePhoto = js.get("title");
-    }
-
-    @Step("Validate if request was successful")
-    public void validateResponseTitle(String name) {
-        Assert.assertEquals(book.getTitle(), name);
-    }
-
-
-    @Step("Update post")
-    public void updatePost() {
-        book = new Book.BookBuilder().setTitle("post 2").setBody("Description89").setUserId("1").build();
-        subSteps.sendPutRequest(book, "/posts/" + (idUser-1));
-        subSteps.verifyResponseBody("title", book.getTitle());
-        subSteps.validateStatusCode(200);
     }
 
     @Step("Delete photo")

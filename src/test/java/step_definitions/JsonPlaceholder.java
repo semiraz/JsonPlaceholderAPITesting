@@ -15,32 +15,33 @@ public class JsonPlaceholder {
     public void user_has_created_an_account() {
         nestaStep.createNewUser();
     }
-    @When("User create a post")
-    public void user_create_a_post() {
-        nestaStep.createPost();
-        nestaStep.getAllPosts();
-    }
-    @And("Create an album")
-    public void create_an_album() {
+
+    @And("Created an album")
+    public void created_an_album() {
         nestaStep.createAlbum();
         nestaStep.getAlbum();
     }
-    @And("^Post a photo with title (.*)$")
-    public void post_a_photo(String title) {
-        nestaStep.postAPhoto(title);
+    @And("^Upload a photo (.*) with name (.*)$")
+    public void upload_a_photo(String url, String title) {
+        nestaStep.postAPhoto(url, title);
+        nestaStep.getPhoto();
     }
     @Then("New album with photos is created")
     public void new_album_with_photos_is_created() {
+        nestaStep.verifyIfAlbumWithPhotosIsCreated();
+    }
+    @When("^User update a photo (.*) with name (.*)$")
+    public void user_update_photo(String title, String url) {
+        nestaStep.updatePhoto(title, url);
+    }
+    @Then("New photo is uploaded")
+    public void new_photo_is_uploaded() {
         nestaStep.getPhoto();
-    }
-    @When("User update a post and delete a photo")
-    public void user_update_a_post_and_delete_a_photo() {
-        nestaStep.updatePost();
-        nestaStep.deletePhoto();
-    }
-    @Then("Post is successfully changed")
-    public void post_is_successfully_changed() {
         nestaStep.validateStatusCodeStep(200);
+    }
+    @When("User delete a photo")
+    public void user_delete_photo() {
+        nestaStep.deletePhoto();
     }
 
     @When("^Photo is successfully deleted$")
